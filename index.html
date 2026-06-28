@@ -231,21 +231,36 @@ a{text-decoration:none;color:inherit}
   letter-spacing: 0.02em;
 }
 
-@@media(max-width:768px){
-  .sidebar { display:none !important; }
-  .main { margin-left:0 !important; padding:16px; }
+/* ==========================================================================
+   BULLETPROOF MOBILE RESPONSIVE & DRAWER SYSTEM
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Hide desktop sidebar */
+  .sidebar { display: none !important; }
   
-  /* FIXED MOBILE TOP BAR */
-  .mobile-top-bar { 
-    display: flex !important; 
-    align-items: center; 
-    justify-content: space-between; 
-    padding: 14px 16px; 
-    background: var(--surface); 
-    border-bottom: 1px solid var(--border); 
-    position: sticky; 
-    top: 0; 
-    z-index: 999; 
+  /* Reset Main area for mobile header */
+  .main { 
+    margin-left: 0 !important; 
+    width: 100% !important; 
+    padding: 80px 16px 24px 16px !important; /* 80px top padding taaki content header ke peeche na chhipe */
+    box-sizing: border-box;
+  }
+  
+  /* NATIVE STYLE MOBILE TOP BAR */
+  .mobile-top-bar {
+    display: flex !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    z-index: 999;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    box-sizing: border-box;
   }
   .menu-toggle-btn {
     background: none;
@@ -253,42 +268,45 @@ a{text-decoration:none;color:inherit}
     font-size: 1.4rem;
     border: none;
     cursor: pointer;
-    padding: 4px;
+    padding: 4px 8px;
   }
 
-  /* BULLETPROOF SLIDE-OUT DRAWER */
+  /* DRAWER OVERLAY (BACKDROP) */
   .mobile-drawer-overlay {
     position: fixed;
     inset: 0;
     background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(4px);
     z-index: 2000;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
   }
-  .mobile-drawer-overlay.open {
+  .mobile-drawer-overlay.active {
     opacity: 1;
     pointer-events: all;
   }
+
+  /* SLIDE-OUT DRAWER (LEFT TO RIGHT) */
   .mobile-drawer {
     position: fixed;
     top: 0;
-    right: -280px;
+    left: -290px; /* Bahar chhipa hua */
     width: 280px;
     height: 100vh;
     background: var(--surface);
-    border-left: 1px solid var(--border);
-    padding: 20px 16px;
+    z-index: 2001;
     display: flex;
     flex-direction: column;
-    z-index: 2001;
-    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: -4px 0 25px rgba(0,0,0,0.5);
+    padding: 20px 16px;
+    box-sizing: border-box;
+    box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .mobile-drawer-overlay.open .mobile-drawer {
-    right: 0;
+  .mobile-drawer-overlay.active .mobile-drawer {
+    transform: translateX(290px); /* Smooth slide inside screen */
   }
+
   .drawer-close {
     align-self: flex-end;
     background: none;
@@ -296,10 +314,10 @@ a{text-decoration:none;color:inherit}
     color: var(--text-muted);
     font-size: 1.3rem;
     cursor: pointer;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
 
-  /* DRAWER NAV BUTTONS - FIXING THE COLLAPSE BUG */
+  /* DRAWER BUTTONS (NO COLLAPSE) */
   .mobile-drawer .nav-item {
     display: flex !important;
     align-items: center;
@@ -312,9 +330,9 @@ a{text-decoration:none;color:inherit}
     border-radius: var(--radius);
     text-align: left;
     font-size: 0.95rem;
-    font-family: inherit;
     cursor: pointer;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    box-sizing: border-box;
     transition: all var(--transition);
   }
   .mobile-drawer .nav-item i {
@@ -326,9 +344,9 @@ a{text-decoration:none;color:inherit}
     color: var(--accent) !important;
     font-weight: 600;
   }
-  
-  /* BOTTOM UTILITIES */
-  .drawer-footer-actions {
+
+  /* DRAWER UTILITIES FOOTER */
+  .drawer-footer {
     margin-top: auto;
     padding-top: 16px;
     border-top: 1px solid var(--border);
@@ -336,7 +354,7 @@ a{text-decoration:none;color:inherit}
     flex-direction: column;
     gap: 8px;
   }
-  .drawer-footer-actions .theme-btn {
+  .drawer-footer .theme-btn {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -348,7 +366,6 @@ a{text-decoration:none;color:inherit}
     border-radius: var(--radius);
     font-size: 0.88rem;
     cursor: pointer;
-    text-align: left;
   }
 }
 </style>
@@ -404,15 +421,15 @@ a{text-decoration:none;color:inherit}
 
 <!-- NEW SLIDE-OUT MENU DRAWER -->
 <div class="mobile-drawer-overlay" id="mobileDrawerOverlay" onclick="toggleMobileMenu(false)">
-    <div class="mobile-drawer" onclick="event.stopPropagation()">
+  <div class="mobile-drawer" onclick="event.stopPropagation()">
       <button class="drawer-close" onclick="toggleMobileMenu(false)"><i class="fas fa-times"></i></button>
       
       <!-- Profile Info inside menu -->
-      <div class="profile-section" style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
+      <div class="profile-section" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
         <div class="profile-avatar" style="font-size: 2.2rem; color: var(--accent);"><i class="fas fa-user-circle"></i></div>
-        <div class="profile-meta" style="display: flex; flex-direction: column;min-width: 0;">
-          <span id="profileNameDisplayMobile" onclick="changeProfileName()" style="font-weight: 600; font-size: 1rem;color: var(--text);white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Shravan</span>
-          <small id="syncKeyDisplayMobile" style="font-size: 0.72rem; color: var(--text-muted);">Key: Active</small>
+        <div class="profile-meta" style="display: flex; flex-direction: column; min-width: 0;">
+          <span id="profileNameDisplayMobile" onclick="changeProfileName()" style="font-weight:600; font-size:1rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Shravan</span>
+          <small id="syncKeyDisplayMobile" style="font-size:0.75rem; color:var(--text-muted);">Sync Active</small>
         </div>
       </div>
 
@@ -424,10 +441,10 @@ a{text-decoration:none;color:inherit}
         <button class="nav-item" id="m-nav-analytics" onclick="handleMobileNav('analytics')"><i class="fas fa-chart-bar"></i> Analytics</button>
       </div>
 
-      <div class="drawer-footer-actions">
-        <button class="theme-btn" onclick="toggleTheme()"><i class="fas fa-moon"></i> Change Theme</button>
-        <button class="theme-btn" onclick="exportCSV()"><i class="fas fa-download"></i> Export Data</button>
-        <button class="theme-btn" style="color: var(--expense); border-color: rgba(244,63,94,0.2);" onclick="unlinkDevice()"><i class="fas fa-unlink"></i> Disconnect Key</button>
+      <div class="drawer-footer">
+        <button class="theme-btn" onclick="toggleTheme(); toggleMobileMenu(false);"><i class="fas fa-moon"></i> Change Theme</button>
+        <button class="theme-btn" onclick="exportCSV(); toggleMobileMenu(false);"><i class="fas fa-download"></i> Export CSV</button>
+        <button class="theme-btn" style="color: var(--expense); border-color: rgba(244,63,94,0.2);" onclick="unlinkDevice(); toggleMobileMenu(false);"><i class="fas fa-unlink"></i> Disconnect</button>
       </div>
     </div>
   </div>
@@ -1016,9 +1033,9 @@ function changeProfileName() {
 function toggleMobileMenu(open) {
   const overlay = document.getElementById('mobileDrawerOverlay');
   if(open) {
-    overlay.classList.add('open');
+    overlay.classList.add('active');
   } else {
-    overlay.classList.remove('open');
+    overlay.classList.remove('active');
   }
 }
 
@@ -1028,20 +1045,26 @@ function handleMobileNav(pageName) {
   
   // Drawer ke andar active tab class switch karo
   document.querySelectorAll('.mobile-drawer .nav-item').forEach(b => b.classList.remove('active'));
-  const activeBtn = document.getElementById(`m-nav-${pageName}`);
-  if(activeBtn) activeBtn.classList.add('active');
+  const targetBtn = document.getElementById(`m-nav-${pageName}`);
+  if(targetBtn) targetBtn.classList.add('active');
   
   // Navigation ke baad automatic menu close kar do
   toggleMobileMenu(false);
 }
 
 // Update initDashboard text bindings for mobile safely
-const superOldInit = initDashboard;
-initDashboard = function() {
-  superOldInit();
-  const currentName = state.profileName || 'Shravan';
-  if(document.getElementById('profileNameDisplayMobile')) document.getElementById('profileNameDisplayMobile').textContent = currentName;
-  if(document.getElementById('syncKeyDisplayMobile')) document.getElementById('syncKeyDisplayMobile').textContent = 'Key: ' + currentSyncKey;
+if (typeof initDashboard === 'function') {
+  const originalInit = initDashboard;
+  initDashboard = function() {
+    originalInit();
+    const currentName = state.profileName || 'Shravan';
+    if(document.getElementById('profileNameDisplayMobile')){
+       document.getElementById('profileNameDisplayMobile').textContent = currentName;
+    }
+    if(document.getElementById('syncKeyDisplayMobile')){
+       document.getElementById('syncKeyDisplayMobile').textContent = 'Key: ' + currentSyncKey;
+    }
+  }
 }
 </script>
 </body>
