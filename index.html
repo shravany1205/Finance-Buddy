@@ -234,139 +234,130 @@ a{text-decoration:none;color:inherit}
 /* ==========================================================================
    BULLETPROOF MOBILE RESPONSIVE & DRAWER SYSTEM
    ========================================================================== */
+/* ==========================================================================
+   TRANSFORMING LAPTOP SIDEBAR INTO MOBILE BOTTOM BAR
+   ========================================================================== */
 @media (max-width: 768px) {
-  /* Hide desktop sidebar */
-  .sidebar { display: none !important; }
   
-  /* Reset Main area for mobile header */
-  .main { 
-    margin-left: 0 !important; 
-    width: 100% !important; 
-    padding: 80px 16px 24px 16px !important; /* 80px top padding taaki content header ke peeche na chhipe */
-    box-sizing: border-box;
-  }
-  
-  /* NATIVE STYLE MOBILE TOP BAR */
-  .mobile-top-bar {
+  /* 1. MOBILE TOP HEADER (Upar sirf Logo aur Profile) */
+  .mobile-top-header {
     display: flex !important;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 60px;
+    height: 50px;
     background: var(--surface);
     border-bottom: 1px solid var(--border);
-    z-index: 999;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     padding: 0 16px;
     box-sizing: border-box;
+    z-index: 9999;
   }
-  .menu-toggle-btn {
-    background: none;
+  .m-logo {
+    font-weight: 700;
+    font-size: 1rem;
     color: var(--text);
-    font-size: 1.4rem;
-    border: none;
-    cursor: pointer;
-    padding: 4px 8px;
   }
-
-  /* DRAWER OVERLAY (BACKDROP) */
-  .mobile-drawer-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(4px);
-    z-index: 2000;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-  .mobile-drawer-overlay.active {
-    opacity: 1;
-    pointer-events: all;
-  }
-
-  /* SLIDE-OUT DRAWER (LEFT TO RIGHT) */
-  .mobile-drawer {
-    position: fixed;
-    top: 0;
-    left: -290px; /* Bahar chhipa hua */
-    width: 280px;
-    height: 100vh;
-    background: var(--surface);
-    z-index: 2001;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 16px;
-    box-sizing: border-box;
-    box-shadow: 5px 0 25px rgba(0,0,0,0.5);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .mobile-drawer-overlay.active .mobile-drawer {
-    transform: translateX(290px); /* Smooth slide inside screen */
-  }
-
-  .drawer-close {
-    align-self: flex-end;
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 1.3rem;
-    cursor: pointer;
-    margin-bottom: 16px;
-  }
-
-  /* DRAWER BUTTONS (NO COLLAPSE) */
-  .mobile-drawer .nav-item {
-    display: flex !important;
-    align-items: center;
-    gap: 12px;
-    width: 100% !important;
-    padding: 12px 16px !important;
-    background: transparent;
-    color: var(--text-muted);
-    border: none !important;
-    border-radius: var(--radius);
-    text-align: left;
-    font-size: 0.95rem;
-    cursor: pointer;
-    margin-bottom: 6px;
-    box-sizing: border-box;
-    transition: all var(--transition);
-  }
-  .mobile-drawer .nav-item i {
-    width: 20px;
-    font-size: 1.1rem;
-  }
-  .mobile-drawer .nav-item.active {
-    background: var(--accent-glow) !important;
-    color: var(--accent) !important;
+  .m-logo i { color: var(--accent); }
+  .m-profile span {
+    font-size: 0.85rem;
     font-weight: 600;
-  }
-
-  /* DRAWER UTILITIES FOOTER */
-  .drawer-footer {
-    margin-top: auto;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .drawer-footer .theme-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    padding: 10px 12px;
-    background: var(--surface2);
     color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    font-size: 0.88rem;
+    background: rgba(255,255,255,0.05);
+    padding: 6px 12px;
+    border-radius: 20px;
     cursor: pointer;
   }
+
+  /* 2. SIDEBAR AS BOTTOM NAV (Niche sirf Pages ke icons) */
+  .sidebar {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 60px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-right: none !important;
+    border-top: 1px solid var(--border) !important;
+    z-index: 9999 !important;
+    background: var(--surface) !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  /* Sidebar ke andar ka logo aur profile hide rakho kyunki wo ab top header me hain */
+  .sidebar .logo, 
+  .sidebar .profile-section {
+    display: none !important;
+  }
+
+  /* Menu links ko poora space do line me */
+  .sidebar .nav-links, .sidebar ul, .sidebar .nav-menu {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    height: 100% !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+  }
+
+  .sidebar .nav-item {
+    flex: 1 !important;
+    height: 100% !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    font-size: 0.7rem !important;
+  }
+  .sidebar .nav-item i { margin: 0 !important; font-size: 1.2rem !important; }
+
+  /* Main body adjustment (Top aur Bottom dono se space) */
+  .main {
+    margin-left: 0 !important;
+    margin-top: 55px !important;   /* Top header ke liye space */
+    margin-bottom: 70px !important; /* Bottom bar ke liye space */
+    width: 100% !important;
+    padding: 16px !important;
+    box-sizing: border-box;
+  }
+}
+
+/* PC par top header chhipa rahega */
+.mobile-top-header { display: none; }
+  premium-footer {
+    padding: 24px 16px;
+    text-align: center;
+    margin-top: 40px;
+  }
+  .footer-container {
+    flex-direction: column; /* Stack vertically on phones */
+    gap: 20px;
+  }
+  .footer-brand-section, .footer-copyright-section {
+    text-align: center;
+    flex: none;
+    width: 100%;
+  }
+  .footer-logo {
+    justify-content: center;
+  }
+  .footer-links-section {
+    justify-content: center;
+    gap: 16px;
+  }
+
   /* ===== SUMMARY BOXES (INCOME/EXPENSE) MOBILE FIX ===== */
   
   /* EXACT FIX FOR THE STATS CARDS */
@@ -391,6 +382,84 @@ a{text-decoration:none;color:inherit}
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  .premium-footer {
+  margin-top: 60px;
+  padding: 30px 20px;
+  background: rgba(255, 255, 255, 0.02); /* Light transparent tint */
+  backdrop-filter: blur(8px); /* Blur effect for premium look */
+  -webkit-backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) 0 0; /* Smooth top corners */
+  width: 100%;
+  box-sizing: border-box;
+ }
+ .footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Automatic line change on smaller screens */
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Brand styling */
+  .footer-brand-section {
+    flex: 1;
+    min-width: 240px;
+  }
+  .footer-logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .logo-highlight {
+    color: var(--accent); /* Aapka highlight neon color */
+  }
+  .footer-tagline {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* Links Styling */
+  .footer-links-section {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .footer-links-section a {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  .footer-links-section a:hover {
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  /* Copyright Styling */
+  .footer-copyright-section {
+    text-align: right;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+  .footer-copyright-section p {
+    margin: 2px 0;
+  }
+  .footer-crafted {
+    font-size: 0.78rem;
+    opacity: 0.8;
+  }
+  .text-danger {
+    color: #ff4757; /* Smooth Red Heart */
+  }
 }
 
 </style>
@@ -410,6 +479,14 @@ a{text-decoration:none;color:inherit}
       <input type="text" class="form-input" id="syncKeyInput" placeholder="e.g., shravan_wallet_99" style="text-align: center; font-weight: 600;">
     </div>
     <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px" onclick="handleKeySync()">Connect Dashboard</button>
+  </div>
+</div>
+<div class="mobile-top-header">
+  <div class="m-logo">
+    <i class="fas fa-wallet"></i> BudgetBuddy
+  </div>
+  <div class="m-profile" onclick="changeProfileName()">
+    <span id="profileNameDisplayMobile">Set Name 👤</span>
   </div>
 </div>
 
@@ -450,10 +527,10 @@ a{text-decoration:none;color:inherit}
       <button class="drawer-close" onclick="toggleMobileMenu(false)"><i class="fas fa-times"></i></button>
       
       <!-- Profile Info inside menu -->
-      <div class="profile-section" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
+      <div class="profile-section" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;cursor: pointer;" onclick="changeProfileName()">
         <div class="profile-avatar" style="font-size: 2.2rem; color: var(--accent);"><i class="fas fa-user-circle"></i></div>
-        <div class="profile-meta" style="display: flex; flex-direction: column; min-width: 0;">
-          <span id="profileNameDisplayMobile" onclick="changeProfileName()" style="font-weight:600; font-size:1rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Shravan</span>
+        <div class="profile-meta" style="display: flex; flex-direction: column; min-width: 0;cursor: pointer;">
+          <span id="profileNameDisplayMobile" onclick="changeProfileName()" style="font-weight:600; font-size:1rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Set Name 👤</span>
           <small id="syncKeyDisplayMobile" style="font-size:0.75rem; color:var(--text-muted);">Sync Active</small>
         </div>
       </div>
@@ -622,6 +699,31 @@ a{text-decoration:none;color:inherit}
     <button class="btn btn-primary" style="width:100%; justify-content:center" onclick="saveBudget()">Save Budget</button>
   </div>
 </div>
+<footer class="premium-footer">
+  <div class="footer-container">
+    
+    <div class="footer-brand-section">
+      <div class="footer-logo">
+        <i class="fas fa-wallet text-accent"></i>
+        <span>Budget<span class="logo-highlight">Buddy</span></span>
+      </div>
+      <p class="footer-tagline">Smart tracking for a smarter financial future.</p>
+    </div>
+
+    <div class="footer-links-section">
+      <a href="#dashboard" onclick="if(typeof showPage==='function') showPage('dashboard')">Dashboard</a>
+      <a href="#" onclick="alert('Privacy Policy coming soon!')">Privacy Policy</a>
+      <a href="#" onclick="alert('Terms of Service coming soon!')">Terms & Conditions</a>
+      <a href="#" onclick="alert('Support Email: support@budgetbuddy.com')">Help & Support</a>
+    </div>
+
+    <div class="footer-copyright-section">
+      <p>&copy; 2026 Budget Buddy. All Rights Reserved.</p>
+      <p class="footer-crafted">Made with <i class="fas fa-heart text-danger"></i> in Mumbai</p>
+    </div>
+
+  </div>
+</footer>
 
 <div class="toast" id="toast"></div>
 
@@ -1072,10 +1174,16 @@ function syncProfileNameWithUI() {
   const savedName = (state && state.profileName) ? state.profileName : 'Set Name 👤';
   
   const desktopName = document.getElementById('profileNameDisplay');
-  const mobileName = document.getElementById('profileNameDisplayMobile');
-  
   if (desktopName) desktopName.textContent = savedName;
+  const mobileName = document.getElementById('profileNameDisplayMobile');
   if (mobileName) mobileName.textContent = savedName;
+  const mobileHeaderName = document.getElementById('profileNameDisplayMobile');
+  if (mobileHeaderName) mobileHeaderName.textContent = savedName;
+
+  const allPossibleNames = document.querySelectorAll('#profileNameDisplay, #profileNameDisplayMobile, .profile-meta span, .profile-section span');
+  allPossibleNames.forEach(el => {
+    if (el) el.textContent = savedName;
+  });
   
   // Mobile drawer me key display ko bhi update rakhein
   const keyMobile = document.getElementById('syncKeyDisplayMobile');
