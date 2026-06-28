@@ -367,7 +367,32 @@ a{text-decoration:none;color:inherit}
     font-size: 0.88rem;
     cursor: pointer;
   }
+  /* ===== SUMMARY BOXES (INCOME/EXPENSE) MOBILE FIX ===== */
+  
+  /* EXACT FIX FOR THE STATS CARDS */
+  .card-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important; /* Pure phone par sirf 1 column banega */
+    gap: 14px !important;
+    margin-bottom: 24px !important;
+    width: 100% !important;
+  }
+
+  .stat-card {
+    width: 100% !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  .stat-value {
+    font-size: 1.65rem !important; /* Phone screen ke hisab se perfect readable size */
+    font-weight: 800 !important;
+    white-space: nowrap !important; /* Amount kabhi tootega nahi */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
+
 </style>
 </head>
 <body>
@@ -620,7 +645,7 @@ let state = {
   transactions: [],
   budgets: {},
   theme: 'dark',
-  profileName: 'Shravan'
+  profileName: 'Set Name'
 };
 
 let currentSyncKey = null;
@@ -680,6 +705,10 @@ function startDatabaseSync() {
   db.ref('vaults/' + currentSyncKey).on('value', snapshot => {
     const data = snapshot.val();
     if(data) {
+      state = data;
+      syncProfileNameWithUI();
+      if (typeof updateSummary === 'function') updateSummary();
+        if (typeof renderTransactions === 'function') renderTransactions()
       state.transactions = data.transactions || [];
       state.budgets = data.budgets || {};
       state.theme = data.theme || 'dark';
@@ -1021,14 +1050,40 @@ function showToast(msg, type='success') {
 
 // CHANGE PROFILE NAME ENGINE
 function changeProfileName() {
-  const newName = prompt('Enter your professional profile name:', state.profileName || '');
-  if (newName && newName.trim() !== '') {
-    state.profileName = newName.trim();
-    persistState(); // Firebase database me permanent save ho jayega
-    document.getElementById('profileNameDisplay').textContent = state.profileName;
+  const currentVal = state.profileName && state.profileName !== 'Set Name 👤' ? state.profileName : '';
+  const newName = prompt('Enter your profile name:', currentVal);
+  if (newName !== null) {
+    state.profileName = newName.trim()!==''? newName.trim():'Set Name';
+    if(typeof persistState === 'function'){
+     persistState();
+    } // Firebase database me permanent save ho jayega
+    syncProfileNameWithUI();
+    const desktopName=document.getElementById('profileNameDisplay');
+    const mobileName=document.getElementById('profileNameDisplayMobile');
+    if(desktopName) desktopName.textContent=state.profileName;
+    if(mobileName) mobileName.textContent=state.profileName;
     showToast('Profile name updated!', 'success');
   }
 }
+
+// DATABASE SE NAAM KHOJ KAR UI ME SET KARNE WALA ENGINE
+function syncProfileNameWithUI() {
+  // Agar Firebase se koi naam aaya hai toh woh dikhao, nahi toh default text
+  const savedName = (state && state.profileName) ? state.profileName : 'Set Name 👤';
+  
+  const desktopName = document.getElementById('profileNameDisplay');
+  const mobileName = document.getElementById('profileNameDisplayMobile');
+  
+  if (desktopName) desktopName.textContent = savedName;
+  if (mobileName) mobileName.textContent = savedName;
+  
+  // Mobile drawer me key display ko bhi update rakhein
+  const keyMobile = document.getElementById('syncKeyDisplayMobile');
+  if (keyMobile && typeof currentSyncKey !== 'undefined') {
+    keyMobile.textContent = 'Key: ' + currentSyncKey;
+  }
+}  
+
 // MOBILE DRAWER ENGINE CONTROLLERS
 function toggleMobileMenu(open) {
   const overlay = document.getElementById('mobileDrawerOverlay');
@@ -1057,7 +1112,10 @@ if (typeof initDashboard === 'function') {
   const originalInit = initDashboard;
   initDashboard = function() {
     originalInit();
-    const currentName = state.profileName || 'Shravan';
+    const currentName = state.profileName || 'Set Name';
+    if (document.getElementById('profileNameDisplay')) {
+      document.getElementById('profileNameDisplay').textContent = currentName;
+    }
     if(document.getElementById('profileNameDisplayMobile')){
        document.getElementById('profileNameDisplayMobile').textContent = currentName;
     }
