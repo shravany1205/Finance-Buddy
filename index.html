@@ -237,100 +237,115 @@ a{text-decoration:none;color:inherit}
 /* ==========================================================================
    TRANSFORMING LAPTOP SIDEBAR INTO MOBILE BOTTOM BAR
    ========================================================================== */
+/* ==========================================================================
+   PURE CSS LAYOUT ENGINE (ZERO HTML CHANGES - NO LAYOUT CLASHING)
+   ========================================================================== */
 @media (max-width: 768px) {
   
-  /* 1. MOBILE TOP HEADER (Upar sirf Logo aur Profile) */
-  .mobile-top-header {
-    display: flex !important;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 16px;
-    box-sizing: border-box;
-    z-index: 9999;
-  }
-  .m-logo {
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--text);
-  }
-  .m-logo i { color: var(--accent); }
-  .m-profile span {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text);
-    background: rgba(255,255,255,0.05);
-    padding: 6px 12px;
-    border-radius: 20px;
-    cursor: pointer;
+  /* 1. Main body layout ko sahi karo taaki side me bikhra hua na dikhe */
+  .main {
+    margin-left: 0 !important; /* PC ka side push jadd se khatam */
+    width: 100% !important;
+    padding-top: 70px !important;    /* Top logo/profile ke liye space */
+    padding-bottom: 80px !important; /* Bottom pages bar ke liye space */
+    box-sizing: border-box !important;
   }
 
-  /* 2. SIDEBAR AS BOTTOM NAV (Niche sirf Pages ke icons) */
+  /* 2. Sidebar container ko mobile par ek transparent shell banao */
   .sidebar {
     position: fixed !important;
-    top: auto !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: transparent !important; /* background invisible kiya */
+    border: none !important;
+    box-shadow: none !important;
+    pointer-events: none !important; /* Clicks peeche main content par pass honge */
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    z-index: 9999 !important;
+  }
+
+  /* Clicks active rakho sidebar ke andar ke items ke liye */
+  .sidebar * {
+    pointer-events: auto !important;
+  }
+
+  /* 3. LOGO: Isko fixed karke top-left par chipkao */
+  .sidebar .logo, .sidebar .logo-section {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 55px !important;
+    background: var(--surface) !important; /* Aapka dark header color */
+    border-bottom: 1px solid var(--border) !important;
+    margin: 0 !important;
+    padding: 0 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 4. PROFILE SECTION: Isko bina disturb kiye top-right par fix karo */
+  .sidebar .profile-section {
+    position: fixed !important;
+    top: 0 !important;
+    right: 16px !important;
+    height: 55px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    background: transparent !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+    z-index: 10000 !important; /* Logo background ke upar dikhega */
+  }
+
+  /* 5. PAGES/MENU LINKS: Inko bottom bar me set karo */
+  .sidebar .nav-links, .sidebar ul, .sidebar .nav-menu {
+    position: fixed !important;
     bottom: 0 !important;
     left: 0 !important;
     width: 100% !important;
     height: 60px !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-around !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border-right: none !important;
-    border-top: 1px solid var(--border) !important;
-    z-index: 9999 !important;
     background: var(--surface) !important;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4) !important;
-  }
-
-  /* Sidebar ke andar ka logo aur profile hide rakho kyunki wo ab top header me hain */
-  .sidebar .logo, 
-  .sidebar .profile-section {
-    display: none !important;
-  }
-
-  /* Menu links ko poora space do line me */
-  .sidebar .nav-links, .sidebar ul, .sidebar .nav-menu {
+    border-top: 1px solid var(--border) !important;
     display: flex !important;
-    flex-direction: row !important;
-    width: 100% !important;
-    height: 100% !important;
+    flex-direction: row !important; /* Saare pages ek aadi line me */
     justify-content: space-around !important;
     align-items: center !important;
     margin: 0 !important;
     padding: 0 !important;
     list-style: none !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4) !important;
   }
 
-  .sidebar .nav-item {
+  /* Individual Menu Item (Dashboard, Analysis, etc.) */
+  .sidebar .nav-item, .sidebar li {
     flex: 1 !important;
     height: 100% !important;
     margin: 0 !important;
+    padding: 0 !important;
     display: flex !important;
-    flex-direction: column !important;
+    flex-direction: column !important; /* Icon upar, text niche stack */
     align-items: center !important;
     justify-content: center !important;
     gap: 2px !important;
     font-size: 0.7rem !important;
   }
-  .sidebar .nav-item i { margin: 0 !important; font-size: 1.2rem !important; }
 
-  /* Main body adjustment (Top aur Bottom dono se space) */
-  .main {
-    margin-left: 0 !important;
-    margin-top: 55px !important;   /* Top header ke liye space */
-    margin-bottom: 70px !important; /* Bottom bar ke liye space */
-    width: 100% !important;
-    padding: 16px !important;
-    box-sizing: border-box;
+  .sidebar .nav-item i, .sidebar li i {
+    margin: 0 !important;
+    font-size: 1.15rem !important; /* Perfectly balanced icon size */
+  }
+
+  .sidebar .nav-item span, .sidebar li span {
+    display: block !important;
   }
 }
 
@@ -460,7 +475,7 @@ a{text-decoration:none;color:inherit}
   .text-danger {
     color: #ff4757; /* Smooth Red Heart */
   }
-}
+
 
 </style>
 </head>
