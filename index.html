@@ -241,11 +241,74 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
   }
   .footer-copyright-section { text-align: center; }
 }
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+.cat-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.cat-chip:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.cat-chip.active {
+  font-weight: 600;
+  transform: scale(1.03);
+}
+#typeExpense.active ~ form #categoryChips .cat-chip.active {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.2), rgba(244, 63, 94, 0.1));
+  border: 1.5px solid var(--expense);
+  color: #fda4af;
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25);
+}
+#typeIncome.active ~ form #categoryChips .cat-chip.active {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+  border: 1.5px solid var(--income);
+  color: #6ee7b7;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+body.light .cat-chip {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #1e293b;
+}
+body.light .cat-chip:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+body.light #typeExpense.active ~ form #categoryChips .cat-chip.active {
+  background: #ffe4e6;
+  border-color: var(--expense);
+  color: #b91c1c;
+}
+body.light #typeIncome.active ~ form #categoryChips .cat-chip.active {
+  background: #d1fae5;
+  border-color: var(--income);
+  color: #047857;
+}
 </style>
 </head>
 <body>
 
-<!-- SYNC SCREEN (NO AUTH NEEDED) -->
 <div class="auth-overlay" id="syncOverlay">
   <div class="auth-card">
     <div class="auth-header">
@@ -255,15 +318,16 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
     </div>
     <div class="form-group">
       <label class="form-label">Your Unique Sync Key</label>
-      <input type="text" class="form-input" id="syncKeyInput" placeholder="e.g., shravan_wallet_99" style="text-align: center; font-weight: 600;">
+      <div class="key-input-wrapper" style="position: relative; display: flex; align-items: center; width: 100%;">        
+        <input type="password" class="form-input" id="syncKeyInput" placeholder="e.g., shravan_wallet_99" style="width: 100%; text-align: center; font-weight: 600; padding-right: 40px;">        
+        <i class="fas fa-eye" id="toggleKeyVisibility" onclick="toggleKeyMask()" style="position: absolute; right: 15px; cursor: pointer; color: var(--text-muted); font-size: 1.1rem; z-index: 10; transition: color 0.2s;"></i>        
+      </div>
     </div>
     <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px" onclick="handleKeySync()">Connect Dashboard</button>
   </div>
 </div>
 
-<!-- MAIN APPLICATION -->
 <div class="app" id="appRoot">
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="logo"><i class="fas fa-wallet"></i> Budget Buddy</div>
     <div class="profile-section">
@@ -272,7 +336,7 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
       </div>
       <div class="profile-meta">
         <span id="profileNameDisplay" onclick="changeProfileName()" title="Click to edit name">Shravan</span>
-        <small id="syncKeyDisplay">Sync Active</small>
+        <!-- <small id="syncKeyDisplay">Sync Active</small> -->
       </div>
     </div>
     <button class="nav-item active" onclick="showPage('dashboard',this)"><i class="fas fa-home"></i> Dashboard</button>
@@ -294,24 +358,22 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
     </div>
   </div>
 
-  <!-- NEW SLIDE-OUT MENU DRAWER -->
   <div class="mobile-drawer-overlay" id="mobileDrawerOverlay" onclick="toggleMobileMenu(false)">
     <div class="mobile-drawer" onclick="event.stopPropagation()">
       <button class="drawer-close" onclick="toggleMobileMenu(false)"><i class="fas fa-times"></i></button>       
-        <!-- Profile Info inside menu -->
-      <div class="profile-section" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;cursor: pointer;" onclick="changeProfileName()">
+      
+      <div class="profile-section" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="changeProfileName()">
         <div class="profile-avatar" style="font-size: 2.2rem; color: var(--accent);"><i class="fas fa-user-circle"></i></div>
         <div class="profile-meta">
-          <span id="profileNameDisplayMobile" onclick="changeProfileName()" style="font-weight:600; font-size:1rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Set Name 👤</span>
-          <small id="syncKeyDisplayMobile" style="font-size:0.75rem; color:var(--text-muted);">Sync Active</small>
+          <span id="profileNameDisplayDrawer" style="font-weight:600; font-size:1rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Set Name 👤</span>
+          <!-- <small id="syncKeyDisplayMobile" style="font-size:0.75rem; color:var(--text-muted);">Sync Active</small> -->
         </div>
       </div>
 
-        <!-- All Navigation items tucked inside -->
       <div style="display: flex; flex-direction: column;">
         <button class="nav-item active" id="m-nav-dashboard" onclick="handleMobileNav('dashboard')"><i class="fas fa-home"></i> Dashboard</button>
         <button class="nav-item " id="m-nav-transactions" onclick="handleMobileNav('transactions')"><i class="fas fa-list"></i> Transactions</button>
-         <button class="nav-item " id="m-nav-budget" onclick="handleMobileNav('budget')"><i class="fas fa-bullseye"></i> Budgets</button>
+        <button class="nav-item " id="m-nav-budget" onclick="handleMobileNav('budget')"><i class="fas fa-bullseye"></i> Budgets</button>
         <button class="nav-item " id="m-nav-analytics" onclick="handleMobileNav('analytics')"><i class="fas fa-chart-bar"></i> Analytics</button>
       </div>
 
@@ -322,10 +384,8 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
       </div>
     </div>
   </div>
-  <!-- MAIN VIEWPORT -->
-  
+
   <main class="main">
-    <!-- DASHBOARD PAGE -->
     <div id="page-dashboard" class="page active">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
         <div>
@@ -338,19 +398,19 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
       <div class="card-grid">
         <div class="stat-card income">
           <div class="stat-label">Monthly Income</div>
-          <div class="stat-value income-color" id="incomeDisplay">₹0</div>
+          <div class="stat-value income-color" id="incomeDisplay">₹0.00</div>
           <div class="stat-sub" id="incomeSub">0 entries</div>
           <i class="fas fa-arrow-trend-up stat-icon"></i>
         </div>
         <div class="stat-card expense">
           <div class="stat-label">Total Expenses</div>
-          <div class="stat-value expense-color" id="expenseDisplay">₹0</div>
+          <div class="stat-value expense-color" id="expenseDisplay">₹0.00</div>
           <div class="stat-sub" id="expenseSub">0 transactions</div>
           <i class="fas fa-shopping-cart stat-icon"></i>
         </div>
         <div class="stat-card balance">
           <div class="stat-label">Balance</div>
-          <div class="stat-value accent-color" id="balanceDisplay">₹0</div>
+          <div class="stat-value accent-color" id="balanceDisplay">₹0.00</div>
           <div class="stat-sub" id="savingsRate">Savings rate: 0%</div>
           <i class="fas fa-piggy-bank stat-icon"></i>
         </div>
@@ -362,7 +422,6 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
       <div id="recentList" class="tx-list"></div>
     </div>
 
-    <!-- TRANSACTIONS PAGE -->
     <div id="page-transactions" class="page">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <h1 style="font-size:1.5rem;font-weight:800">Transactions</h1>
@@ -384,7 +443,6 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
       <div id="allTxList" class="tx-list"></div>
     </div>
 
-    <!-- BUDGET PAGE -->
     <div id="page-budget" class="page">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <h1 style="font-size:1.5rem;font-weight:800">Budgets</h1>
@@ -393,7 +451,6 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
       <div class="budget-grid" id="budgetGrid"></div>
     </div>
 
-    <!-- ANALYTICS PAGE -->
     <div id="page-analytics" class="page">
       <h1 style="font-size:1.5rem;font-weight:800;margin-bottom:20px">Analytics</h1>
       <div class="tabs" id="analyticsTabs">
@@ -402,6 +459,7 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
       </div>
       <div id="analyticsContent"></div>
     </div>
+
     <footer class="premium-footer">
       <div class="footer-container"> 
         <div class="footer-brand-section">
@@ -412,9 +470,11 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
           <p class="footer-tagline">Smart tracking for a smarter financial future.</p>
         </div>
         <div class="footer-links-section">
-          <a href="#" onclick="alert('Privacy Policy coming soon!')">Privacy Policy</a>
-          <a href="#" onclick="alert('Terms of Service coming soon!')">Terms & Conditions</a>
-          <a href="#" onclick="alert('Support Email: support@budgetbuddy.com')">Help & Support</a>
+          <!-- Ab alerts ki jagah direct sleek modals khulenge -->
+          <a href="javascript:void(0)" onclick="openFooterModal('privacy')">Privacy Policy</a>
+          <a href="javascript:void(0)" onclick="openFooterModal('terms')">Terms & Conditions</a>
+          <a href="javascript:void(0)" onclick="openFooterModal('support')">Help & Support</a>
+          <a href="javascript:void(0)" onclick="openFooterModal('rules')">Important Rules</a>
         </div>
         <div class="footer-copyright-section">
           <p>&copy; 2026 Budget Buddy. All Rights Reserved.</p>
@@ -422,13 +482,30 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
         </div>
       </div>
     </footer>
+    <!-- === DYNAMIC INFOCENTER MODAL === -->
+    <div class="modal" id="infoCenterModal" style="display: none;">
+      <div class="modal-content" style="max-width: 500px; text-align: left;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h3 id="infoModalTitle" style="margin: 0; color: var(--accent); display: flex; align-items: center; gap: 8px;">
+            <!-- Title Javascript se dynamically aayega -->
+          </h3>
+          <button class="btn-close" onclick="document.getElementById('infoCenterModal').style.display='none'; if(typeof closeModal === 'function') { closeModal('infoCenterModal'); }" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
+        </div>
+        
+        <div id="infoModalBody" class="modal-body" style="font-size: 0.88rem; line-height: 1.6; color: var(--text-muted); max-height: 60vh; overflow-y: auto;">
+          <!-- Content Javascript se dynamically inject hoga -->
+        </div>
+
+        <div class="modal-footer" style="margin-top: 20px;">
+          <button class="btn btn-primary" style="width: 100%;" onclick="document.getElementById('infoCenterModal').style.display='none'; if(typeof closeModal === 'function') { closeModal('infoCenterModal'); }">Got It & Close</button>
+        </div>
+      </div>
+    </div>
   </main>
 </div>
 
-<!-- FAB -->
 <button class="fab" onclick="openAddModal()"><i class="fas fa-plus"></i></button>
 
-<!-- TRANSACTION MODAL -->
 <div class="modal-overlay" id="addModal">
   <div class="modal">
     <div class="modal-header">
@@ -439,35 +516,33 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
       <button class="type-btn active expense" id="typeExpense" onclick="setTxType('expense')">Expense</button>
       <button class="type-btn income" id="typeIncome" onclick="setTxType('income')">Income</button>
     </div>
-    <form id="txForm" onsubmit="event.preventDefault(); handleTxSubmit();">
-    <input type="hidden" id="txId">
-    <div class="form-group">
-      <label class="form-label">Title</label>
-      <input type="text" class="form-input" id="txTitle" placeholder="e.g. Groceries, Salary">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Amount (₹)</label>
-      <input type="number" class="form-input" id="txAmount" placeholder="0.00">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Category</label>
-      <div class="cat-grid" id="categoryChips"></div>
-      <input type="text" class="form-input" id="customCat" placeholder="Or type custom category..." style="margin-top:8px" oninput="clearCatChips()">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Date</label>
-      <input type="date" class="form-input" id="txDate">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Note (optional)</label>
-      <input type="text" class="form-input" id="txNote" placeholder="Details...">
-    </div>
-    <button class="btn btn-primary" style="width:100%; justify-content:center" onclick="submitTransaction()">Save Transaction</button>
+    <form id="txForm" onsubmit="event.preventDefault();">
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-input" id="txTitle" placeholder="e.g. Groceries, Salary">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amount (₹)</label>
+        <input type="number" class="form-input" id="txAmount" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <div class="cat-grid" id="categoryChips"></div>
+        <input type="text" class="form-input" id="customCat" placeholder="Or type custom category..." style="margin-top:8px" oninput="clearCatChips()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-input" id="txDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note (optional)</label>
+        <input type="text" class="form-input" id="txNote" placeholder="Details...">
+      </div>
+      <button type="button" class="btn btn-primary" style="width:100%; justify-content:center" onclick="submitTransaction()">Save Transaction</button>
     </form>
   </div>
 </div>
 
-<!-- BUDGET MODAL -->
 <div class="modal-overlay" id="budgetModal">
   <div class="modal">
     <div class="modal-header">
@@ -490,14 +565,13 @@ input, select, textarea { font-family: inherit; outline: none; border: none; }
 
 <script>
 // ==========================================
-// 1. FIREBASE CONFIG (PASTE YOUR COPIED VALUES HERE)
+// 1. FIREBASE CONFIG
 // ==========================================
 const firebaseConfig = {
   apiKey: "AIzaSyDkio9689VoZSw88626ArWszFp1uc6Vr8U",
   databaseURL: "https://financebuddy-8af87-default-rtdb.firebaseio.com",
   projectId: "financebuddy-8af87",
   appId: "1:672554286077:web:c14e29a3d14d899aa4f794"
-
 };
 
 // Initialize Firebase Realtime DB
@@ -508,10 +582,12 @@ let state = {
   transactions: [],
   budgets: {},
   theme: 'dark',
-  profileName: 'Set Name'
+  profileName: 'Shravan'
 };
 
 let currentSyncKey = null;
+let isDataLoadedFromFirebase = false; // Flag to protect data overwrite
+
 const EXPENSE_CATS = ['Food','Shopping','Bills','Transport','Entertainment','Health','Home','Education','EMI','Others'];
 const INCOME_CATS  = ['Salary','Freelance','Business','Investment','Gift','Others'];
 const CAT_ICONS    = {Food:'🍔',Shopping:'🛍️',Bills:'⚡',Transport:'🚗',Entertainment:'🎬',Health:'💊',Home:'🏠',Education:'📚',EMI:'🏦',Others:'💼',Salary:'💰',Freelance:'💻',Business:'📈',Investment:'💹',Gift:'🎁'};
@@ -529,17 +605,16 @@ window.addEventListener('DOMContentLoaded', () => {
   const savedKey = localStorage.getItem('budget_buddy_synckey');
   if (savedKey) {
     currentSyncKey = savedKey;
-    document.getElementById('syncOverlay').style.display = 'none';
-    document.getElementById('appRoot').classList.add('authenticated');
+    if(document.getElementById('syncOverlay')) document.getElementById('syncOverlay').style.display = 'none';
+    if(document.getElementById('appRoot')) document.getElementById('appRoot').classList.add('authenticated');
     startDatabaseSync();
   } else {
-    document.getElementById('syncOverlay').style.display = 'flex';
+    if(document.getElementById('syncOverlay')) document.getElementById('syncOverlay').style.display = 'flex';
   }
 });
 
 function handleKeySync() {
   const rawKey = document.getElementById('syncKeyInput').value.trim();
-  // Cleaning safe path names for Firebase keys
   const cleanKey = rawKey.replace(/[^a-zA-Z0-9_]/g, "");
 
   if(!cleanKey || cleanKey.length < 4) {
@@ -549,9 +624,10 @@ function handleKeySync() {
 
   currentSyncKey = cleanKey;
   localStorage.setItem('budget_buddy_synckey', cleanKey);
-  document.getElementById('syncOverlay').style.display = 'none';
-  document.getElementById('appRoot').classList.add('authenticated');
+  if(document.getElementById('syncOverlay')) document.getElementById('syncOverlay').style.display = 'none';
+  if(document.getElementById('appRoot')) document.getElementById('appRoot').classList.add('authenticated');
   
+  isDataLoadedFromFirebase = false; // Reset for new key
   startDatabaseSync();
   showToast('Secure sync established!', 'success');
 }
@@ -564,24 +640,33 @@ function unlinkDevice() {
 
 function startDatabaseSync() {
   if(!currentSyncKey) return;
-  // Real-time listener: laptop pe badlega toh phone pe automatic update hoga!
+  
+  // .on() lagane se pehle flag false rakhenge taaki naya data overwrite na ho
   db.ref('vaults/' + currentSyncKey).on('value', snapshot => {
     const data = snapshot.val();
+    
     if(data) {
-      state = data;
-      syncProfileNameWithUI();
-      if (typeof updateSummary === 'function') updateSummary();
-        if (typeof renderTransactions === 'function') renderTransactions()
       state.transactions = data.transactions || [];
       state.budgets = data.budgets || {};
       state.theme = data.theme || 'dark';
+      state.profileName = data.profileName || 'Shravan';
+    } else {
+      // Agar database me bilkul naya key hai tabhi default data set hoga
+      state.transactions = [];
+      state.budgets = {};
+      state.theme = 'dark';
+      state.profileName = 'Shravan';
     }
+    
+    isDataLoadedFromFirebase = true; // Confirmation that Firebase read completed successfully
     initDashboard();
+  }, error => {
+    showToast('Firebase Error: ' + error.message, 'danger');
   });
 }
 
 function persistState() {
-  if(!currentSyncKey) return;
+  if(!currentSyncKey || !isDataLoadedFromFirebase) return; // Stop write if data is not fully fetched yet
   db.ref('vaults/' + currentSyncKey).set(state)
     .catch(err => showToast('Database Sync Error: ' + err.message, 'danger'));
 }
@@ -595,32 +680,29 @@ function initDashboard() {
   renderAllTx();
   renderBudgets();
   updateThemeBtn();
-  // PROFILE RENDER LOGIC
-  const currentName = state.profileName || 'Shravan';
-if(document.getElementById('profileNameDisplay')) document.getElementById('profileNameDisplay').textContent = currentName;
-if(document.getElementById('profileNameDisplayMobile')) document.getElementById('profileNameDisplayMobile').textContent = currentName;
-
-if(document.getElementById('syncKeyDisplay')) document.getElementById('syncKeyDisplay').textContent = 'Key: ' + currentSyncKey;
-  document.getElementById('dashMonth').textContent = new Date().toLocaleString('default',{month:'long',year:'numeric'});
+  syncProfileNameWithUI();
+  
+  if(document.getElementById('syncKeyDisplay')) document.getElementById('syncKeyDisplay').textContent = 'Key: ' + currentSyncKey;
+  if(document.getElementById('syncKeyDisplayMobile')) document.getElementById('syncKeyDisplayMobile').textContent = 'Key: ' + currentSyncKey;
+  if(document.getElementById('dashMonth')) document.getElementById('dashMonth').textContent = new Date().toLocaleString('default',{month:'long',year:'numeric'});
 }
 
 function applyTheme() { document.body.classList.toggle('light', state.theme === 'light'); }
 function updateThemeBtn() {
   const isLight = state.theme === 'light';
-  document.getElementById('themeIcon').className = isLight ? 'fas fa-moon' : 'fas fa-sun';
-  document.getElementById('themeLabel').textContent = isLight ? 'Dark Mode' : 'Light Mode';
+  if(document.getElementById('themeIcon')) document.getElementById('themeIcon').className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+  if(document.getElementById('themeLabel')) document.getElementById('themeLabel').textContent = isLight ? 'Dark Mode' : 'Light Mode';
 }
 function toggleTheme() {
   state.theme = state.theme === 'dark' ? 'light' : 'dark';
   persistState();
-  applyTheme();
-  updateThemeBtn();
-  if (analyticsTab) renderAnalytics();
 }
 
-function showPage(name, btn, isMobile = false) {
+function showPage(name, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
+  const targetPage = document.getElementById('page-' + name);
+  if(targetPage) targetPage.classList.add('active');
+  
   document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
@@ -639,34 +721,42 @@ function txOfMonth(my) { return state.transactions.filter(t => getMonthYear(t.da
 function renderDashboard() {
   const my = curMonthYear();
   const txCur = txOfMonth(my);
-  const inc = txCur.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
-  const exp = txCur.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  
+  const inc = txCur.filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
+  const exp = txCur.filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0);
   const bal = inc - exp;
-  const rate = inc > 0 ? Math.round((bal/inc)*100) : 0;
+  const rate = inc > 0 ? Math.round((bal / inc) * 100) : 0;
 
-  document.getElementById('incomeDisplay').textContent = fmt(inc);
-  document.getElementById('expenseDisplay').textContent = fmt(exp);
-  document.getElementById('balanceDisplay').textContent = fmt(bal);
-  document.getElementById('balanceDisplay').style.color = bal < 0 ? 'var(--expense)' : 'var(--accent)';
-  document.getElementById('incomeSub').textContent = txCur.filter(t=>t.type==='income').length + ' items';
-  document.getElementById('expenseSub').textContent = txCur.filter(t=>t.type==='expense').length + ' items';
-  document.getElementById('savingsRate').textContent = `Savings rate: ${rate}%`;
+  if(document.getElementById('incomeDisplay')) document.getElementById('incomeDisplay').textContent = fmt(inc);
+  if(document.getElementById('expenseDisplay')) document.getElementById('expenseDisplay').textContent = fmt(exp);
+  
+  if(document.getElementById('balanceDisplay')) {
+    const balDisp = document.getElementById('balanceDisplay');
+    balDisp.textContent = fmt(bal);
+    balDisp.style.color = bal < 0 ? 'var(--expense)' : 'var(--accent)';
+  }
+  
+  if(document.getElementById('incomeSub')) document.getElementById('incomeSub').textContent = txCur.filter(t => t.type === 'income').length + ' entries';
+  if(document.getElementById('expenseSub')) document.getElementById('expenseSub').textContent = txCur.filter(t => t.type === 'expense').length + ' transactions';
+  if(document.getElementById('savingsRate')) document.getElementById('savingsRate').textContent = `Savings rate: ${rate}%`;
 
-  const recent = [...state.transactions].sort((a,b)=>b.id-a.id).slice(0,5);
+  const recent = [...state.transactions].sort((a, b) => b.id - a.id).slice(0, 5);
   const el = document.getElementById('recentList');
-  el.innerHTML = recent.length === 0 ? '<div class="empty-state">No transactions recorded.</div>' : recent.map(t => txItemHTML(t)).join('');
-  bindTxActions(el);
+  if(el) {
+    el.innerHTML = recent.length === 0 ? '<div class="empty-state">No transactions recorded.</div>' : recent.map(t => txItemHTML(t)).join('');
+    bindTxActions(el);
+  }
 }
 
 function txItemHTML(t) {
-  const icon = CAT_ICONS[t.category] || (t.type==='income'?'💰':'💳');
+  const icon = CAT_ICONS[t.category] || (t.type === 'income' ? '💰' : '💳');
   return `<div class="tx-item" data-id="${t.id}">
     <div class="tx-icon ${t.type}">${icon}</div>
     <div class="tx-info">
       <div class="tx-title">${t.title}</div>
       <div class="tx-meta">${t.category} · ${fmtDate(t.date)} ${t.note ? '· '+t.note : ''}</div>
     </div>
-    <div class="tx-amount ${t.type}">${t.type==='expense'?'-':'+'}${fmt(t.amount)}</div>
+    <div class="tx-amount ${t.type}">${t.type === 'expense' ? '-' : '+'}${fmt(t.amount)}</div>
     <div class="tx-actions">
       <button class="btn btn-ghost btn-icon btn-sm edit-btn" data-id="${t.id}"><i class="fas fa-pen"></i></button>
       <button class="btn btn-danger btn-icon btn-sm del-btn" data-id="${t.id}"><i class="fas fa-trash"></i></button>
@@ -675,12 +765,18 @@ function txItemHTML(t) {
 }
 
 function bindTxActions(container) {
-  container.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', e => openEditModal(parseInt(e.currentTarget.dataset.id))));
-  container.querySelectorAll('.del-btn').forEach(b => b.addEventListener('click', e => deleteTransaction(parseInt(e.currentTarget.dataset.id))));
+  container.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    openEditModal(parseInt(e.currentTarget.dataset.id));
+  }));
+  container.querySelectorAll('.del-btn').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    deleteTransaction(parseInt(e.currentTarget.dataset.id));
+  }));
 }
 
 function renderAllTx() {
-  const search = (document.getElementById('txSearch')?.value||'').toLowerCase();
+  const search = (document.getElementById('txSearch')?.value || '').toLowerCase();
   const typeF  = document.getElementById('txTypeFilter')?.value || 'all';
   const sortF  = document.getElementById('txSort')?.value || 'newest';
 
@@ -688,9 +784,9 @@ function renderAllTx() {
   if (typeF !== 'all') txs = txs.filter(t => t.type === typeF);
   if (search) txs = txs.filter(t => t.title.toLowerCase().includes(search) || t.category.toLowerCase().includes(search));
 
-  if (sortF==='newest') txs.sort((a,b)=>b.id-a.id);
-  else if (sortF==='oldest') txs.sort((a,b)=>a.id-b.id);
-  else txs.sort((a,b)=>b.amount-a.amount);
+  if (sortF === 'newest') txs.sort((a, b) => b.id - a.id);
+  else if (sortF === 'oldest') txs.sort((a, b) => a.id - b.id);
+  else txs.sort((a, b) => b.amount - a.amount);
 
   const el = document.getElementById('allTxList');
   if(el) {
@@ -731,15 +827,15 @@ function openEditModal(id) {
 
 function setTxType(type) {
   currentTxType = type;
-  document.getElementById('typeExpense').classList.toggle('active', type==='expense');
-  document.getElementById('typeIncome').classList.toggle('active', type==='income');
+  document.getElementById('typeExpense').classList.toggle('active', type === 'expense');
+  document.getElementById('typeIncome').classList.toggle('active', type === 'income');
   renderCatChips();
 }
 
 function renderCatChips() {
   const cats = currentTxType === 'expense' ? EXPENSE_CATS : INCOME_CATS;
   document.getElementById('categoryChips').innerHTML = cats.map(c => 
-    `<button type="button" class="cat-chip ${selectedCat===c?'active':''}" onclick="selectCat('${c}')">${CAT_ICONS[c]||''} ${c}</button>`
+    `<button type="button" class="cat-chip ${selectedCat === c ? 'active' : ''}" onclick="selectCat('${c}')">${CAT_ICONS[c] || ''} ${c}</button>`
   ).join('');
 }
 
@@ -754,13 +850,23 @@ function submitTransaction() {
   const customCat = document.getElementById('customCat').value.trim();
   const category = customCat || selectedCat || 'Others';
 
-  if(!title || isNaN(amount) || amount <= 0) { showToast('Please write valid operational attributes.', 'danger'); return; }
+  if(!title || isNaN(amount) || amount <= 0) { showToast('Please write valid details.', 'danger'); return; }
+
+  const txData = {
+    id: editingId !== null ? editingId : Date.now(),
+    title,
+    amount,
+    category,
+    note,
+    date: new Date(date).toISOString(),
+    type: currentTxType
+  };
 
   if (editingId !== null) {
     const idx = state.transactions.findIndex(t => t.id === editingId);
-    if (idx > -1) state.transactions[idx] = { id: editingId, title, amount, category, note, date: new Date(date).toISOString(), type: currentTxType };
+    if (idx > -1) state.transactions[idx] = txData;
   } else {
-    state.transactions.push({ id: Date.now(), title, amount, category, note, date: new Date(date).toISOString(), type: currentTxType });
+    state.transactions.push(txData);
   }
 
   persistState();
@@ -778,7 +884,7 @@ function deleteTransaction(id) {
 // ==========================================
 function openBudgetModal() {
   const sel = document.getElementById('budgetCat');
-  sel.innerHTML = EXPENSE_CATS.map(c => `<option value="${c}">${c}</option>`).join('');
+  if(sel) sel.innerHTML = EXPENSE_CATS.map(c => `<option value="${c}">${c}</option>`).join('');
   document.getElementById('budgetAmount').value = '';
   openModal('budgetModal');
 }
@@ -800,14 +906,14 @@ function removeBudget(cat) {
 function renderBudgets() {
   const my = curMonthYear();
   const expBycat = {};
-  txOfMonth(my).filter(t=>t.type==='expense').forEach(t => expBycat[t.category] = (expBycat[t.category]||0) + t.amount);
+  txOfMonth(my).filter(t => t.type === 'expense').forEach(t => expBycat[t.category] = (expBycat[t.category] || 0) + Number(t.amount));
 
   let html = '';
   Object.entries(state.budgets).forEach(([cat, limit]) => {
     const spent = expBycat[cat] || 0;
-    const pct = Math.min(Math.round((spent/limit)*100), 100);
+    const pct = Math.min(Math.round((spent / limit) * 100), 100);
     const circ = 2 * Math.PI * 36;
-    const offset = circ - (pct/100)*circ;
+    const offset = circ - (pct / 100) * circ;
     const color = spent > limit ? 'var(--expense)' : 'var(--income)';
 
     html += `<div class="budget-ring-card">
@@ -824,7 +930,8 @@ function renderBudgets() {
     </div>`;
   });
   html += `<div class="add-budget-card" onclick="openBudgetModal()"><i class="fas fa-plus"></i>Set Budget</div>`;
-  document.getElementById('budgetGrid').innerHTML = html;
+  const grid = document.getElementById('budgetGrid');
+  if(grid) grid.innerHTML = html;
 }
 
 // ==========================================
@@ -833,7 +940,7 @@ function renderBudgets() {
 function switchAnalyticsTab(tab, btn) {
   analyticsTab = tab;
   document.querySelectorAll('#analyticsTabs .tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  if(btn) btn.classList.add('active');
   renderAnalytics();
 }
 
@@ -855,11 +962,14 @@ function renderMonthlyChart() {
     const d = new Date(t.date);
     const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
     if (!monthly[key]) monthly[key] = { income:0, expense:0 };
-    monthly[key][t.type] += t.amount;
+    monthly[key][t.type] += Number(t.amount);
   });
   const keys = Object.keys(monthly).sort();
   if(barChart) barChart.destroy();
-  barChart = new Chart(document.getElementById('barChartCanvas'), {
+  
+  const canvas = document.getElementById('barChartCanvas');
+  if(!canvas) return;
+  barChart = new Chart(canvas, {
     type: 'bar',
     data: {
       labels: keys,
@@ -872,23 +982,8 @@ function renderMonthlyChart() {
   });
 }
 
-function renderCategoryChart() {
-  const my = curMonthYear();
-  const expBycat = {};
-  txOfMonth(my).filter(t=>t.type==='expense').forEach(t => expBycat[t.category] = (expBycat[t.category]||0) + t.amount);
-  
-  if(pieChart) pieChart.destroy();
-  pieChart = new Chart(document.getElementById('pieChartCanvas'), {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(expBycat),
-      datasets: [{ data: Object.values(expBycat), backgroundColor: ['#6366f1','#f43f5e','#10b981','#f59e0b','#3b82f6'] }]
-    }
-  });
-}
-
 // ==========================================
-// 7. DATA UTILITIES
+// 7. DATA UTILITIES & MODALS
 // ==========================================
 function exportCSV() {
   if (state.transactions.length === 0) { showToast('No data to export.', 'danger'); return; }
@@ -902,97 +997,146 @@ function exportCSV() {
   a.click();
 }
 
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openModal(id) { 
+  const m = document.getElementById(id);
+  if(m) m.classList.add('open'); 
+}
+function closeModal(id) { 
+  const m = document.getElementById(id);
+  if(m) m.classList.remove('open'); 
+}
+
 let toastTimer;
 function showToast(msg, type='success') {
   const t = document.getElementById('toast');
+  if(!t) return;
   t.textContent = msg; t.className = `toast show ${type}`;
   clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// CHANGE PROFILE NAME ENGINE
 function changeProfileName() {
-  const currentVal = state.profileName && state.profileName !== 'Set Name 👤' ? state.profileName : '';
+  const currentVal = state.profileName && state.profileName !== 'Set Name' ? state.profileName : '';
   const newName = prompt('Enter your profile name:', currentVal);
   if (newName !== null) {
-    state.profileName = newName.trim()!==''? newName.trim():'Set Name';
-    if(typeof persistState === 'function'){
-     persistState();
-    } // Firebase database me permanent save ho jayega
-    syncProfileNameWithUI();
-    const desktopName=document.getElementById('profileNameDisplay');
-    const mobileName=document.getElementById('profileNameDisplayMobile');
-    if(desktopName) desktopName.textContent=state.profileName;
-    if(mobileName) mobileName.textContent=state.profileName;
+    state.profileName = newName.trim() !== '' ? newName.trim() : 'Shravan';
+    persistState();
     showToast('Profile name updated!', 'success');
   }
 }
 
-// DATABASE SE NAAM KHOJ KAR UI ME SET KARNE WALA ENGINE
 function syncProfileNameWithUI() {
-  // Agar Firebase se koi naam aaya hai toh woh dikhao, nahi toh default text
-  const savedName = (state && state.profileName) ? state.profileName : 'Set Name 👤';
-  
-  const desktopName = document.getElementById('profileNameDisplay');
-  if (desktopName) desktopName.textContent = savedName;
-  const mobileName = document.getElementById('profileNameDisplayMobile');
-  if (mobileName) mobileName.textContent = savedName;
-  const mobileHeaderName = document.getElementById('profileNameDisplayMobile');
-  if (mobileHeaderName) mobileHeaderName.textContent = savedName;
-
-  const allPossibleNames = document.querySelectorAll('#profileNameDisplay, #profileNameDisplayMobile, .profile-meta span, .profile-section span');
+  const savedName = state.profileName || 'Shravan';
+  const allPossibleNames = document.querySelectorAll('#profileNameDisplay, #profileNameDisplayMobile, #profileNameDisplayDrawer');
   allPossibleNames.forEach(el => {
     if (el) el.textContent = savedName;
   });
-  
-  // Mobile drawer me key display ko bhi update rakhein
-  const keyMobile = document.getElementById('syncKeyDisplayMobile');
-  if (keyMobile && typeof currentSyncKey !== 'undefined') {
-    keyMobile.textContent = 'Key: ' + currentSyncKey;
-  }
 }  
 
-// MOBILE DRAWER ENGINE CONTROLLERS
+// ==========================================
+// 8. MOBILE DRAWER CONTROLLERS
+// ==========================================
 function toggleMobileMenu(open) {
   const overlay = document.getElementById('mobileDrawerOverlay');
-  if(open) {
-    overlay.classList.add('active');
-  } else {
-    overlay.classList.remove('active');
-  }
+  if(!overlay) return;
+  if(open) overlay.classList.add('open');
+  else overlay.classList.remove('open');
 }
 
 function handleMobileNav(pageName) {
-  // Page badlo
-  showPage(pageName, null);
-  
-  // Drawer ke andar active tab class switch karo
+  // 1. Mobile drawer ke andar active button ka highlight change karne ke liye
   document.querySelectorAll('.mobile-drawer .nav-item').forEach(b => b.classList.remove('active'));
   const targetBtn = document.getElementById(`m-nav-${pageName}`);
   if(targetBtn) targetBtn.classList.add('active');
   
-  // Navigation ke baad automatic menu close kar do
+  // 2. Main page controller ko call karke screen change karne ke liye
+  // Hum sidebar ke button ko pass nahi kar rahe hain isliye null bhejenge
+  showPage(pageName, null); 
+  
+  // 3. Laptop/Desktop wale sidebar ke active state ko bhi sath me sync rakhne ke liye
+  document.querySelectorAll('.sidebar .nav-item').forEach(b => {
+    if(b.getAttribute('onclick').includes(`'${pageName}'`)) {
+      b.classList.add('active');
+    } else {
+      b.classList.remove('active');
+    }
+  });
+
+  // 4. Page change hone ke baad mobile drawer ko smoothly band karne ke liye
   toggleMobileMenu(false);
 }
+// ==========================================
+// 9. DYNAMIC FOOTER CONTENT CONTROLLER
+// ==========================================
+function openFooterModal(type) {
+  const modalEl = document.getElementById('infoCenterModal');
+  const titleEl = document.getElementById('infoModalTitle');
+  const bodyEl = document.getElementById('infoModalBody');
+  
+  if(!modalEl || !titleEl || !bodyEl) return;
 
-// Update initDashboard text bindings for mobile safely
-if (typeof initDashboard === 'function') {
-  const originalInit = initDashboard;
-  initDashboard = function() {
-    originalInit();
-    const currentName = state.profileName || 'Set Name';
-    if (document.getElementById('profileNameDisplay')) {
-      document.getElementById('profileNameDisplay').textContent = currentName;
-    }
-    if(document.getElementById('profileNameDisplayMobile')){
-       document.getElementById('profileNameDisplayMobile').textContent = currentName;
-    }
-    if(document.getElementById('syncKeyDisplayMobile')){
-       document.getElementById('syncKeyDisplayMobile').textContent = 'Key: ' + currentSyncKey;
-    }
+  if (type === 'privacy') {
+    titleEl.innerHTML = `<i class="fas fa-shield-alt"></i> Privacy Policy`;
+    bodyEl.innerHTML = `
+      <p style="margin-top: 0; color: var(--text);">Budget Buddy aapki privacy ki dil se izzat karta hai:</p>
+      <p>• <strong>Zero Identity:</strong> Hum aapka Email ID, Phone Number, ya Real Name kabhi store nahi karte.</p>
+      <p>• <strong>Secure Vault:</strong> Aapka data Firebase par aapki unique generated cloud key ke safe node me rehta hai.</p>
+      <p>• <strong>Full Deletion:</strong> Disconnect button dabate hi browser cache se saara temporary linkage instantly clear ho jata hai.</p>
+    `;
+  } 
+  else if (type === 'terms') {
+    titleEl.innerHTML = `<i class="fas fa-file-contract"></i> Terms & Conditions`;
+    bodyEl.innerHTML = `
+      <p style="margin-top: 0; color: var(--text);">Traditional login/passwords ke jhanjhat ko khatam karne ke liye ise banaya gaya hai.</p>
+      <p>Bina kisi personal info (Email/Phone) ko leak kiye, aap cloud network par apna budget data safe aur secure tarike se manage karne ke liye puri tarah swatantra hain.</p>
+    `;
+  } 
+  else if (type === 'support') {
+    titleEl.innerHTML = `<i class="fas fa-headset"></i> Help & Support`;
+    bodyEl.innerHTML = `
+      <div style="text-align: center; padding: 10px 0;">
+        <i class="fas fa-envelope-open-text" style="font-size: 3rem; color: var(--accent); margin-bottom: 12px; display:block;"></i>
+        <p style="color: var(--text); font-weight: 600; margin-bottom: 4px;">Koi dikkat ya feedback hai?</p>
+        <p style="margin-top: 0;">Aap direct developer support desk par mail kar sakte hain:</p>
+        <a href="mailto:shravany1205@gmail.com" style="color: var(--income); font-weight: 700; text-decoration: none; font-size: 1.05rem; background: rgba(16,185,129,0.1); padding: 8px 16px; border-radius: 8px; display: inline-block; margin-top: 8px;">
+          shravany1205@gmail.com
+        </a>
+      </div>
+    `;
+  } 
+  else if (type === 'rules') {
+    titleEl.innerHTML = `<i class="fas fa-exclamation-circle" style="color:var(--expense)"></i> Important Sync Rules`;
+    bodyEl.innerHTML = `
+      <p style="margin-top: 0; color: var(--text);">Apni ek unique key banayein aur use laptop/mobile dono me enter karke live sync chalayein:</p>
+      <p>🔒 <strong>1. Case Sensitive Room:</strong> Capital (A) aur Small (a) letters alag distinct database properties handle karte hain. Sahi key enter karein.</p>
+      <p>⚠️ <strong>2. Key Security Loss:</strong> Yeh engine anonymous hai, agar aap apni unique key bhool gaye toh aapka data recover nahi kiya ja sakega.</p>
+    `;
+  }
+
+  // Aapke core js function se modal smoothly trigger ho jayega
+  modalEl.style.display = 'flex'; 
+  modalEl.classList.add('active');
+}
+// 10. UNIQUE KEY HIDE/SHOW CONTROLLER
+    // ==========================================
+function toggleKeyMask() {
+  const keyInput = document.getElementById('syncKeyInput');
+  const eyeIcon = document.getElementById('toggleKeyVisibility');
+  
+  if(!keyInput || !eyeIcon) return;
+  
+  if (keyInput.type === 'password') {
+    keyInput.type = 'text';
+    eyeIcon.classList.remove('fa-eye');
+    eyeIcon.classList.add('fa-eye-slash');
+    eyeIcon.style.color = 'var(--accent)'; 
+  } else {
+    keyInput.type = 'password';
+    eyeIcon.classList.remove('fa-eye-slash');
+    eyeIcon.classList.add('fa-eye');
+    eyeIcon.style.color = 'var(--text-muted)';
   }
 }
+
 </script>
 </body>
 </html>
